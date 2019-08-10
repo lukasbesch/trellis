@@ -4,3 +4,4 @@ www_root: ~/                    # /var/www/vhosts/example.com
 web_user: example.com           # your ssh user with access to bash
 web_group: psacln               # plesk user
 wp_cli: ~/bin/wp                # path to wp-cli
+plesk_compatibility_mode: true  # this runs some ansible commands differently

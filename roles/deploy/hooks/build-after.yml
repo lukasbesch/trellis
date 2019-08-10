@@ -9,23 +9,43 @@
     msg: "Unable to find a `composer.json` file in the root of '{{ deploy_helper.new_release_path }}'. Make sure your repo has a `composer.json` file in its root or edit `repo_subtree_path` for '{{ site }}' in `wordpress_sites.yml` so it points to the directory with a `composer.json` file."
   when: not composer_json.stat.exists
 
-- name: Setup composer authentications
-  composer:
-    command: config
-    arguments: --auth http-basic.{{ composer_authentication.hostname }} {{ composer_authentication.username }} {{ composer_authentication.password }}
-    working_dir: "{{ deploy_helper.new_release_path }}"
-  no_log: true
-  changed_when: false
+- block:
+  - name: Setup Composer authentications
+    composer:
+      command: config
+      arguments: --auth http-basic.{{ composer_authentication.hostname }} {{ composer_authentication.username }} {{ composer_authentication.password }}
+      working_dir: "{{ deploy_helper.new_release_path }}"
+    no_log: true
+    changed_when: false
+    when: ! project.plesk_compatibility_mode | default(! plesk_compatibility_mode | default(true)) | bool
+    loop: "{{ composer_authentications }}"
+    loop_control:
+      loop_var: composer_authentication
+      label: "{{ composer_authentication.hostname }}"
+
+  - name: Setup composer authentications (Compatibility Mode)
+    command: composer config --working-dir {{ deploy_helper.new_release_path }} --auth http-basic.{{ composer_authentication.hostname }} {{ composer_authentication.username }} {{ composer_authentication.password }}
+    no_log: true
+    changed_when: false
+    when: project.plesk_compatibility_mode | default(plesk_compatibility_mode | default(false)) | bool
+    loop: "{{ composer_authentications }}"
+    loop_control:
+      loop_var: composer_authentication
+      label: "{{ composer_authentication.hostname }}"
+
   when:
     - composer_authentication.hostname is defined and composer_authentication.hostname != ""
     - composer_authentication.username is defined and composer_authentication.username != ""
     - composer_authentication.password is defined and composer_authentication.password != ""
-  loop: "{{ composer_authentications }}"
-  loop_control:
-    loop_var: composer_authentication
-    label: "{{ composer_authentication.hostname }}"
 
 - name: Install Composer dependencies
   composer:
     no_scripts: yes
     working_dir: "{{ deploy_helper.new_release_path }}"
+  when: ! project.plesk_compatibility_mode | default(! plesk_compatibility_mode | default(true)) | bool
+
+- name: Install Composer dependencies (Compatibility Mode)
+  command: composer install --no-ansi --no-dev --no-interaction --no-progress --optimize-autoloader --no-scripts
+  args:
+    chdir: "{{ deploy_helper.new_release_path }}"
+  when: project.plesk_compatibility_mode | default(plesk_compatibility_mode | default(false)) | bool
