@@ -43,3 +43,4 @@
   shell: sudo service php7.3-fpm reload
   args:
     warn: false
+  when: project.reload_fpm_on_deploy | default(reload_fpm_on_deploy) | default(true)
