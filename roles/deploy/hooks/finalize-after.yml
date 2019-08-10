@@ -1,7 +1,7 @@
 ---
 - block:
   - name: Remove WordPress transient containing old release path
-    shell: "{{ project.multisite.enabled | default(false) | ternary('wp network meta delete 1', 'wp option delete') }} _site_transient_theme_roots ||:"
+    shell: "{{ project.multisite.enabled | default(false) | ternary(project_wp_cli + ' network meta delete 1', project_wp_cli + ' option delete') }} _site_transient_theme_roots ||:"
     args:
       chdir: "{{ deploy_helper.current_path }}"
     register: site_transient_theme_roots
@@ -26,7 +26,7 @@
     when: project.update_db_on_deploy | default(update_db_on_deploy) and project.multisite.enabled | default(false)
 
   - name: Update WP database
-    command: wp core update-db {{ project.multisite.enabled | default(false) | ternary('--network', '') }}
+    command: "{{ project_wp_cli }} core update-db {{ project.multisite.enabled | default(false) | ternary('--network', '') }}"
     args:
       chdir: "{{ deploy_helper.current_path }}"
     when: project.update_db_on_deploy | default(update_db_on_deploy)

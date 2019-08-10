@@ -5,7 +5,7 @@
     dest: "{{ deploy_helper.shared_path }}/tmp_multisite_constants.php"
 
 - name: WordPress Installed?
-  command: wp core is-installed --skip-plugins --skip-themes --require={{ deploy_helper.shared_path }}/tmp_multisite_constants.php
+  command: "{{ project_wp_cli }} core is-installed --skip-plugins --skip-themes --require={{ deploy_helper.shared_path }}/tmp_multisite_constants.php"
   args:
     chdir: "{{ deploy_helper.new_release_path }}"
   register: wp_installed
@@ -15,9 +15,9 @@
 - name: Get WP theme template and stylesheet roots
   shell: >
     {% if not project.multisite.enabled | default(false) %}
-      wp option get {{ item }} --skip-plugins --skip-themes
+      {{ project_wp_cli }} option get {{ item }} --skip-plugins --skip-themes
     {% else %}
-      wp site list --field=url | xargs -I {} bash -c 'export url="{}"; echo -n "$url " && wp option get {{ item }} --skip-plugins --skip-themes --url=$url || echo'
+      {{ project_wp_cli }} site list --field=url | xargs -I {} bash -c 'export url="{}"; echo -n "$url " && {{ project_wp_cli }} option get {{ item }} --skip-plugins --skip-themes --url=$url || echo'
     {% endif %}
   args:
     chdir: "{{ deploy_helper.current_path }}"
