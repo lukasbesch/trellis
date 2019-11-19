@@ -15,7 +15,7 @@ server {
   {% endblock %}
 
   {% block server_basic -%}
-  root  {{ www_root }}/{{ item.key }}/{{ item.value.current_path | default('current') }}/web;
+  root  {{ www_root }}/{{ item.key }}/{{ item.value.current_path | default('current') }}/{{ item.value.web_root | default('web') }};
   index index.php index.htm index.html;
   add_header Fastcgi-Cache $upstream_cache_status;
 
@@ -50,6 +50,7 @@ server {
   {% endblock -%}
 
   {% block multisite_rewrites -%}
+  {% if app_type == 'wordpress' -%}
   {% if item.value.multisite.enabled | default(false) -%}
   # Multisite rewrites
   {% if item.value.multisite.subdomains | default(false) -%}
@@ -63,6 +64,7 @@ server {
     rewrite ^(/[^/]+)?(/.*\.php) /wp$2 last;
   }
 
+  {% endif -%}
   {% endif -%}
   {% endif -%}
   {% endblock -%}
@@ -116,10 +118,12 @@ server {
   {% endblock -%}
 
   {% block location_uploads_php -%}
+  {% if app_type == 'wordpress' -%}
   # Prevent PHP scripts from being executed inside the uploads folder.
   location ~* /app/uploads/.*\.php$ {
     deny all;
   }
+  {% endif -%}
   {% endblock %}
   
   {% block blade_twig_templates -%}
@@ -204,12 +208,14 @@ server {
   {% if item.value.nginx_embed_security | default(nginx_embed_security | default(true)) -%}
   add_header Content-Security-Policy "frame-ancestors 'self'" always;
 
+  {% if app_type == 'wordpress' -%}
   # Conditional X-Frame-Options until https://core.trac.wordpress.org/ticket/40020 is resolved
   set $x_frame_options SAMEORIGIN;
   if ($arg_customize_changeset_uuid) {
     set $x_frame_options "";
   }
   add_header X-Frame-Options $x_frame_options always;
+  {% endif -%}
 
   {% endif -%}
   {% endblock -%}
@@ -224,7 +230,7 @@ server {
     {% block cache_config -%}
     {% if item.value.cache is defined and item.value.cache.enabled | default(false) -%}
     # Fastcgi cache settings
-    fastcgi_cache wordpress;
+    fastcgi_cache app;
     fastcgi_cache_valid {{ item.value.cache.duration | default(nginx_cache_duration) }};
     fastcgi_cache_bypass $skip_cache;
     fastcgi_no_cache $skip_cache;
@@ -237,7 +243,7 @@ server {
     include fastcgi_params;
     fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
     fastcgi_param DOCUMENT_ROOT $realpath_root;
-    fastcgi_pass unix:/var/run/php-fpm-wordpress.sock;
+    fastcgi_pass unix:/var/run/php-fpm-app.sock;
     {%- endblock %}
 
   }

@@ -1,5 +1,12 @@
-site_uses_local_db: "{{ site_env.db_host == 'localhost' }}"
-nginx_wordpress_site_conf: wordpress-site.conf.j2
+# MariaDB
+app_db_host: "{{ site_env.db_host }}"
+app_db_user_host: "{{ site_env.db_user_host | default(app_db_host) }}"
+app_db_user: "{{ site_env.db_username | default(site_env.db_user) }}" # @todo this can be done better
+app_db_name: "{{ site_env.db_database | default(site_env.db_name) }}" # @todo this can be done better
+app_db_password: "{{ site_env.db_password }}"
+site_uses_local_db: "{{ app_db_host == 'localhost' }}"
+
+nginx_app_conf: app.conf.j2
 nginx_ssl_path: "{{ nginx_path }}/ssl"
 
 ssl_default_site:
