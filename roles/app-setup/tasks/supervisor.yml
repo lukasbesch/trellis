@@ -1,0 +1,6 @@
+---
+- name: Write config file
+  template:
+    src: laravel-workers.conf.j2
+    dest: "/etc/supervisor/conf.d/{{ item.key }}-workers.conf"
+  with_dict: "{{ apps }}"

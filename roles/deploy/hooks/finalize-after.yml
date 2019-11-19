@@ -61,7 +61,7 @@
     when: project.migrate_db_on_deploy | default(migrate_db_on_deploy)
 
   - name: Link the storage directory
-    command: /usr/bin/php artisan storage:link
+    command: php artisan storage:link
     args:
       chdir: "{{ deploy_helper.new_release_path }}"
 
@@ -71,3 +71,17 @@
   shell: sudo service php7.3-fpm reload
   args:
     warn: false
+
+- block:
+    - name: Update queue workers
+      shell: sudo supervisorctl reread && sudo supervisorctl update
+      args:
+        chdir: "{{ deploy_helper.new_release_path }}"
+        warn: false
+
+    - name: Restart all queue workers
+      shell: php artisan queue:restart
+      args:
+        chdir: "{{ deploy_helper.new_release_path }}"
+
+  when: (project.type | default('wordpress') == 'laravel'
