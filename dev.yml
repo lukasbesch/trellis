@@ -26,5 +26,5 @@
     - { role: logrotate, tags: [logrotate] }
     - { role: composer, tags: [composer] }
     - { role: wp-cli, tags: [wp-cli] }
-    - { role: wordpress-setup, tags: [app, app-setup] }
-    - { role: wordpress-install, tags: [app, app-install] }
+    - { role: app-setup, tags: [app, app-setup] }
+    - { role: app-install, tags: [app, app-install] }

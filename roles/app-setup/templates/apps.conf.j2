@@ -131,7 +131,7 @@ server {
   }
   {% endif -%}
   {% endblock %}
-  
+
   {% block blade_twig_templates -%}
   # Prevent Blade and Twig templates from being accessed directly.
   location ~* \.(blade\.php|twig)$ {
@@ -153,12 +153,12 @@ server {
   location ~* package(-lock)?\.json$ {
     deny all;
   }
-  
+
   # yarn
   location ~* yarn\.lock$ {
     deny all;
   }
-  
+
   # bundler
   location ~* Gemfile(\.lock)?$ {
     deny all;
