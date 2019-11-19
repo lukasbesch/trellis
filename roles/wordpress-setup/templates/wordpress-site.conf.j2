@@ -124,6 +124,12 @@ server {
     deny all;
   }
   {% endif -%}
+  {% if app_type == 'laravel' -%}
+  # Prevent PHP scripts from being executed inside the uploads folder.
+  location ~* /storage/.*\.php$ {
+    deny all;
+  }
+  {% endif -%}
   {% endblock %}
   
   {% block blade_twig_templates -%}
