@@ -46,12 +46,15 @@ Make sure all dependencies have been installed before moving on:
 The recommended directory structure for a Trellis project looks like:
 
 ```shell
-example.com/      # → Root folder for the project
-├── trellis/      # → Your clone of this repository
-└── site/         # → A Bedrock-based WordPress site
+example.com/          # → Root folder for the project
+├── trellis/          # → Your clone of this repository
+└── site/             # → A Bedrock-based WordPress site
     └── web/
-        ├── app/  # → WordPress content directory (themes, plugins, etc.)
-        └── wp/   # → WordPress core (don't touch!)
+        ├── app/      # → WordPress content directory (themes, plugins, etc.)
+        └── wp/       # → WordPress core (don't touch!)
+└── site/             # → A Laravel-based site
+    └── public/       # → Set the web_root to `public`
+        └── storage/  # → Laravel content directory (uploads, etc.)
 ```
 
 See a complete working example in the [roots-example-project.com repo](https://github.com/roots/roots-example-project.com).

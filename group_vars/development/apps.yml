@@ -18,3 +18,20 @@ apps:
       provider: self-signed
     cache:
       enabled: false
+
+# Uncomment below for a Laravel site:
+#
+#  example.com:
+#    type: laravel # type of this app. Can be `wordpress` or `laravel` (defaults to `wordpress`)
+#    web_root: public # The web root. Defaults to `web`
+#    site_hosts:
+#      - canonical: example.test
+#        redirects:
+#          - www.example.test
+#    local_path: ../site # path targeting local laravel site directory (relative to Ansible root)
+#    admin_email: admin@example.test
+#    ssl:
+#      enabled: false
+#      provider: self-signed
+#    cache:
+#      enabled: false
