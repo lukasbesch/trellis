@@ -10,7 +10,7 @@ env_defaults:
     domain_current_site: "{{ project.site_hosts | map(attribute='canonical') | first }}"
 
   laravel:
-    app_name: "{{ item.key }}"
+    app_name: "{{ site }}"
     app_env: "{{ env }}"
     app_key: ""
     app_debug: false
@@ -46,7 +46,7 @@ env_defaults:
     # mix_pusher_app_key:"${PUSHER_APP_KEY}"
     # mix_pusher_app_cluster:"${PUSHER_APP_CLUSTER}"
 
-app_type: "{{ item.value.type | default('wordpress') }}"
+app_type: "{{ project.type | default('wordpress') }}"
 app_env_defaults: "{{ env_defaults[ app_type ] | default({}) }}"
 
 site_env: "{{ app_env_defaults | combine(vault_app_env_defaults | default({}), project.env | default({}), vault_apps[site].env) }}"
