@@ -24,6 +24,7 @@
     - { role: memcached, tags: [memcached] }
     - { role: redis, tags: [redis] }
     - { role: supervisor, tags: [supervisor] }
+    - { role: node, tags: [node, nvm] }
     - { role: nginx, tags: [nginx] }
     - { role: logrotate, tags: [logrotate] }
     - { role: composer, tags: [composer] }

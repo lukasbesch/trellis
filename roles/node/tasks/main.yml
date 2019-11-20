@@ -1,0 +1,39 @@
+---
+- include: nvm.yml
+  tags: nvm
+
+- block:
+  - name: Check node Version
+    shell: "bash -c 'source {{ nvm_dir }}/nvm.sh && node -v'"
+    register: node_version
+
+  - name: Define node path
+    set_fact:
+      node_path: "{{ nvm_dir }}/versions/node/{{ node_version.stdout }}"
+
+  - name: Ensure npm global packages are installed
+    shell: "bash -c 'source {{ nvm_dir }}/nvm.sh && npm i -g {{ nodejs_npm_global_packages }}'"
+    register: npm_installed_global_packages
+
+  become: true
+  become_user: "{{ web_user }}"
+
+#- name: Ensure npm global packages are installed.
+#  become: true
+#  become_user: "{{ web_user }}"
+#  npm:
+#    name: "{{ item.name | default(item) }}"
+#    version: "{{ item.version | default('latest') }}"
+#
+#    global: yes
+##    state: latest
+#    executable: "{{ npm_executable }}"
+#  loop: "{{ nodejs_npm_global_packages }}"
+#
+#- name: Install packages defined in a given package.json.
+#  become: true
+#  become_user: "{{ web_user }}"
+#  npm:
+#    path: "{{ nodejs_package_json_path }}"
+#    executable: "{{ npm_executable }}"
+#  when: nodejs_package_json_path is defined and nodejs_package_json_path
